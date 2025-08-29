@@ -34,7 +34,8 @@
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
     "postbuild": "npm run copy-assets",
-    "format": "prettier --write src/**/*.ts"
+    "format": "prettier --write src/**/*.ts",
+    "copy-assets": "echo 'No assets to copy'"
   },
   "dependencies": {
     "blue.ts": "^1.3.4-beta",
