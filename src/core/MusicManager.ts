@@ -12,7 +12,7 @@ export class MusicManager {
         client_id: process.env.SPOTIFY_CLIENT_ID || "",
         client_secret: process.env.SPOTIFY_CLIENT_SECRET || "",
       },
-      autoplay: false,
+      autoplay: true,
       autoResume: false,
       version: "v4" as const,
       library: Library.DiscordJs,
