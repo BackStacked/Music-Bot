@@ -1,19 +1,7 @@
-import { Message } from "discord.js";
-import { Command } from "@/core/Command";
+import { Message } from 'discord.js';
 
-export default async (message: Message, commands: Command[]) => {
+export default async (message: Message) => {
+  // No longer handling text commands since we're using slash commands
+  // This event can be used for other message-related functionality if needed
   if (message.author.bot || !message.guild) return;
-
-  const [cmd, ...args] = message.content.trim().split(/\s+/);
-  if (!cmd.startsWith("!")) return;
-
-  const command = commands.find(
-    (c) =>
-      c.name === cmd.slice(1).toLowerCase() ||
-      c.aliases.includes(cmd.slice(1).toLowerCase())
-  );
-
-  if (command) {
-    await command.execute(message, args);
-  }
 };

@@ -1,26 +1,28 @@
-import { Command } from "@/core/Command";
-import { Message } from "discord.js";
+import { Command } from '@/core/Command';
+import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
 
 export class SkipCommand extends Command {
-  public name = "skip";
-  public aliases = ["s"];
+  public name = 'skip';
+  public data = new SlashCommandBuilder()
+    .setName('skip')
+    .setDescription('Skip the current track');
 
-  async execute(message: Message): Promise<void> {
-    const player = (message.client as any).music.manager.players.get(
-      message.guild!.id
+  async execute(interaction: ChatInputCommandInteraction): Promise<void> {
+    const player = (interaction.client as any).music.manager.players.get(
+      interaction.guild!.id
     );
 
     if (!player) {
-      await message.reply("❌ No active player.");
+      await interaction.reply('❌ No active player.');
       return;
     }
 
     if (!player.queue.current) {
-      await message.reply("❌ Nothing is currently playing.");
+      await interaction.reply('❌ Nothing is currently playing.');
       return;
     }
 
     player.stop();
-    await message.reply("⏭️ Skipped!");
+    await interaction.reply('⏭️ Skipped!');
   }
 }

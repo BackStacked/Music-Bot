@@ -1,25 +1,27 @@
-import { Command } from "@/core/Command";
-import { Message } from "discord.js";
+import { Command } from '@/core/Command';
+import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
 
 export class PauseCommand extends Command {
-  public name = "pause";
-  public aliases = ["resume"];
+  public name = 'pause';
+  public data = new SlashCommandBuilder()
+    .setName('pause')
+    .setDescription('Pause or resume the current track');
 
-  async execute(message: Message): Promise<void> {
-    const player = (message.client as any).music.manager.players.get(
-      message.guild!.id
+  async execute(interaction: ChatInputCommandInteraction): Promise<void> {
+    const player = (interaction.client as any).music.manager.players.get(
+      interaction.guild!.id
     );
 
     if (!player) {
-      await message.reply("❌ No active player.");
+      await interaction.reply('❌ No active player.');
       return;
     }
     if (player.paused) {
       player.pause(false); // This resumes playback
-      await message.reply("▶️ Resumed!");
+      await interaction.reply('▶️ Resumed!');
     } else {
       player.pause(true); // This pauses playback
-      await message.reply("⏸️ Paused!");
+      await interaction.reply('⏸️ Paused!');
     }
   }
 }

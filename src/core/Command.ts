@@ -1,7 +1,13 @@
-import { Message } from "discord.js";
+import {
+  ChatInputCommandInteraction,
+  SlashCommandBuilder,
+  SlashCommandOptionsOnlyBuilder,
+} from 'discord.js';
 
 export abstract class Command {
   public abstract name: string;
-  public aliases: string[] = [];
-  public abstract execute(message: Message, args: string[]): Promise<void>;
+  public abstract data: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder;
+  public abstract execute(
+    interaction: ChatInputCommandInteraction
+  ): Promise<void>;
 }

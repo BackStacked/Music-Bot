@@ -1,7 +1,7 @@
-import { Command } from "@/core/Command";
-import { Message } from "discord.js";
-import { Formatter } from "@/utils/Formatter";
-import { EmbedFactory } from "@/utils/EmbedFactory";
+import { Command } from '@/core/Command';
+import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
+import { Formatter } from '@/utils/Formatter';
+import { EmbedFactory } from '@/utils/EmbedFactory';
 
 interface Track {
   info: {
@@ -14,26 +14,28 @@ interface Track {
 }
 
 export class QueueCommand extends Command {
-  public name = "queue";
-  public aliases = ["q"];
+  public name = 'queue';
+  public data = new SlashCommandBuilder()
+    .setName('queue')
+    .setDescription('Show the current music queue');
 
-  async execute(message: Message): Promise<void> {
-    if (!message.guild) {
-      await message.reply({
+  async execute(interaction: ChatInputCommandInteraction): Promise<void> {
+    if (!interaction.guild) {
+      await interaction.reply({
         embeds: [
-          EmbedFactory.error("This command can only be used in a server."),
+          EmbedFactory.error('This command can only be used in a server.'),
         ],
       });
       return;
     }
 
-    const player = (message.client as any).music?.manager?.players?.get(
-      message.guild.id
+    const player = (interaction.client as any).music?.manager?.players?.get(
+      interaction.guild.id
     );
 
     if (!player) {
-      await message.reply({
-        embeds: [EmbedFactory.error("No active player in this server.")],
+      await interaction.reply({
+        embeds: [EmbedFactory.error('No active player in this server.')],
       });
       return;
     }
@@ -44,31 +46,31 @@ export class QueueCommand extends Command {
 
     // Check if queue is completely empty
     if (!current && upcoming.length === 0) {
-      await message.reply({
-        embeds: [EmbedFactory.error("The queue is currently empty.")],
+      await interaction.reply({
+        embeds: [EmbedFactory.error('The queue is currently empty.')],
       });
       return;
     }
 
-    let description = "";
+    let description = '';
 
     // Now Playing
     if (current) {
       const duration = current.info.duration
         ? Formatter.formatDuration(current.info.duration)
-        : "Unknown";
+        : 'Unknown';
       description += `🎶 **Now Playing:**\n[${current.info.title}](${current.info.uri}) \`${duration}\`\n\n`;
     }
 
     // Upcoming tracks
     if (upcoming.length > 0) {
-      description += "**Up Next:**\n";
+      description += '**Up Next:**\n';
 
       const displayTracks = upcoming.slice(0, 10);
       displayTracks.forEach((track, i) => {
         const duration = track.info.duration
           ? Formatter.formatDuration(track.info.duration)
-          : "Unknown";
+          : 'Unknown';
         description += `\`${i + 1}.\` [${track.info.title}](${
           track.info.uri
         }) \`${duration}\`\n`;
@@ -78,20 +80,20 @@ export class QueueCommand extends Command {
         description += `\n...and ${upcoming.length - 10} more track(s)`;
       }
     } else {
-      description += "*No upcoming tracks*";
+      description += '*No upcoming tracks*';
     }
 
     // Show total queue info
     const totalTracks = (current ? 1 : 0) + upcoming.length;
     const totalDuration = this.calculateTotalDuration(current, upcoming);
 
-    const embed = new EmbedFactory("🎵 Current Queue")
+    const embed = new EmbedFactory('🎵 Current Queue')
       .setDescription(description)
       .setThumbnail(current?.info.artworkUrl || current?.info.thumbnail || null)
       .setFooter(`${totalTracks} track(s) • Total duration: ${totalDuration}`)
       .build();
 
-    await message.reply({ embeds: [embed] });
+    await interaction.reply({ embeds: [embed] });
   }
 
   private calculateTotalDuration(
@@ -110,7 +112,7 @@ export class QueueCommand extends Command {
       }
     });
 
-    if (totalMs === 0) return "Unknown";
+    if (totalMs === 0) return 'Unknown';
 
     const totalMinutes = Math.floor(totalMs / 60000);
     const hours = Math.floor(totalMinutes / 60);
